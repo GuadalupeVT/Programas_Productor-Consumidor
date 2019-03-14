@@ -2,6 +2,9 @@
 // Buffer interface specifies methods called by Producer and Consumer.
 //La interfaz de búfer especifica métodos llamados por el Productor y el Consumidor.
 import java.security.SecureRandom;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 interface Buffer{
 // place int value into Buffer
@@ -42,7 +45,7 @@ class Producer implements Runnable{
 			}
 		}
 		//System.out.printf("Producer done producing%nTerminating Producer%n");
-		System.out.printf("Productor hecho producionedo%n Terminando Productor%n");
+		System.out.printf("Produccion terminada del Productor%n Terminando Productor%n");
 	}
 } // end class Producer
 
@@ -72,7 +75,7 @@ class Consumer implements Runnable{
 			}
 		}
 		//System.out.printf("%n%s %d%n%s%n","Consumer read values totaling", sum, "Terminating Consumer");
-		System.out.printf("%n%s %d%n%s%n","EL consumidor leeyo los valores totalmente", sum, "Terminando consumidor");
+		System.out.printf("%n%s %d%n%s%n","El total de valores que consumidor leyo", sum, "Terminando consumidor");
 	}
 } // end class Consumer
 
@@ -103,12 +106,33 @@ class UnsynchronizedBuffer implements Buffer{
 }// end class UnsynchronizedBuffer
 
 
-
+//Application with two threads manipulating an unsynchronized buffer.
+//Aplicación con dos hilos manipulando un búfer no sincronizado.
+             //SharedBufferTest
 public class Prueba {
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+	public static void main(String[] args)throws InterruptedException {
+		
+		// create new thread pool with two threads
+		// Crear un nuevo grupo de hilos con dos hilos.
+		ExecutorService executorService = Executors.newCachedThreadPool();
+		
+		// create UnsynchronizedBuffer to store ints
+		//crear un UnsynchronizedBuffer para almacenar entradas
+		Buffer sharedLocation = new UnsynchronizedBuffer();
+		
+		//System.out.println( "Action\t\tValue\tSum of Produced\tSum of Consumed");
+		System.out.println( "Accion       \t\tValor\tSum Producto\tSum Consumidor");
+		System.out.printf("-------------\t\t------\t-------------\t---------------%n%n");
+		// execute the Producer and Consumer, giving each
+		//Ejecutar el productor y consumidor
+		// access to the sharedLocation
+		//accesa a la locacion compartida sharedLocation
+		executorService.execute(new Producer(sharedLocation));
+		executorService.execute(new Consumer(sharedLocation));
+		executorService.shutdown(); // terminate app when tasks complete
+		                            //termina la aplicacion cuando la tarea se completo
+		executorService.awaitTermination(1, TimeUnit.MINUTES);
 	}
 
 }

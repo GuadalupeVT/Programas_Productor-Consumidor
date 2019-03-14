@@ -1,4 +1,6 @@
-
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 // Synchronizing access to shared mutable data using Object
 // methods wait and notifyAll.
 //Sincronización de acceso a datos mutables compartidos utilizando Object
@@ -78,7 +80,26 @@ class SynchronizedBuffer implements Buffer{
 	}
 }// end class SynchronizedBuffer
 
-
+//PAGINA 990
 public class Prueba {
+	public static void main(String[] args) throws InterruptedException{
+		// create a newCachedThreadPool
+		//Crea un nuevo grupo de hilos en caché
+		ExecutorService executorService = Executors.newCachedThreadPool();
+		
+		// create SynchronizedBuffer to store ints
+		//Crear Búfer Sincronizado para almacenar entradas
+		Buffer sharedLocation = new SynchronizedBuffer();
+		
+		System.out.printf("%-40s%s\t\t%s%n%-40s%s%n%n", "Operation","Buffer", "Occupied", "---------", "------\t\t--------");
+		// execute the Producer and Consumer tasks
+		// Ejecutar las tareas del productor y consumidor.
+		executorService.execute(new Producer(sharedLocation));
+		executorService.execute(new Consumer(sharedLocation));
+		
+		executorService.shutdown();
+		executorService.awaitTermination(1, TimeUnit.MINUTES);
+		
+	}
 
 }

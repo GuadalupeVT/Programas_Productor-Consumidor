@@ -1,3 +1,4 @@
+import java.security.SecureRandom;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -42,6 +43,37 @@ class BlockingBuffer implements Buffer{
 		return readValue;
 	}
 } // end class BlockingBuffer
+
+class Producer implements Runnable{
+	
+	private static final SecureRandom generator = new SecureRandom();
+	private final Buffer sharedLocation; // reference to shared object
+	                                     //referencia a objeto compartido
+	//constructor
+	public Producer(Buffer sharedLocation){
+	this.sharedLocation = sharedLocation;
+	}
+	
+	// store values from 1 to 10 in sharedLocation
+	//almacena valores de 1 a 10 en sharedLocation
+	public void run() {
+		int sum = 0;
+		for (int count = 1; count <= 10; count++) {
+			try {// sleep 0 to 3 seconds, then place value in Buffer
+				 //duerme de 0 a 3 segundos, luego coloca el valor en Buffer
+				Thread.sleep(generator.nextInt(3000)); // random sleep
+				sharedLocation.blockingPut(count); // set value in buffer/ valor en el buffer
+				sum += count; // increment sum of values/ incrementar la suma de valores
+				//System.out.printf("\t%2d%n", sum);	
+			}
+			catch (InterruptedException exception) {
+				Thread.currentThread().interrupt();
+			}
+		}
+		//System.out.printf("Producer done producing%nTerminating Producer%n");
+		System.out.printf("Produccion terminada del Productor%n Terminando Productor%n");
+	}
+} // end class Producer
 
 
 public class Prueba {

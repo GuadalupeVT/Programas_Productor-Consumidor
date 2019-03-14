@@ -18,6 +18,7 @@ interface Buffer{
 
 class SynchronizedBuffer implements Buffer{
 	private int buffer = -1; // shared by producer and consumer threads
+	                         // Compartidos por hilos de productores y consumidores.
 	private boolean occupied = false;
 	
 	// place value into buffer
@@ -29,8 +30,8 @@ class SynchronizedBuffer implements Buffer{
 		while (occupied) {
 			// output thread information and buffer information, then wait
 			// información de hilo de salida e información de búfer, luego espera
-			System.out.println("Producer tries to write."); // for demo only
-			displayState("Buffer full. Producer waits."); // for demo only
+			System.out.println("El productor trata de escribir."); // for demo only
+			displayState("Buffer lleno. Productor en espera."); // for demo only
 			wait();
 		}
 		buffer = value; // set new buffer value
@@ -41,7 +42,7 @@ class SynchronizedBuffer implements Buffer{
 		// hasta que el consumidor recupere el valor actual del búfer
 		occupied = true;
 		
-		displayState("Producer writes " + buffer); // for demo only
+		displayState("El Productor escribe " + buffer); // for demo only
 		notifyAll(); // tell waiting thread(s) to enter runnable state
 		             // Dice a los hilos en espera que ingresen al estado ejecutable	
 	} // end method blockingPut; releases lock on SynchronizedBuffer
@@ -56,8 +57,8 @@ class SynchronizedBuffer implements Buffer{
 		while (!occupied) {
 			// output thread information and buffer information, then wait
 			//información de hilo de salida e información de búfer, luego espera
-			System.out.println("Consumer tries to read."); // for demo only
-			displayState("Buffer empty. Consumer waits."); // for demo only
+			System.out.println("El Consumidor trata de leer."); // for demo only
+			displayState("Buffer vacio. Consumidor en espera."); // for demo only
 			wait();
 		}
 		
@@ -66,7 +67,7 @@ class SynchronizedBuffer implements Buffer{
 		// because consumer just retrieved buffer value
 		// porque el consumidor acaba de recuperar el valor del búfer
 		occupied = false;
-		displayState("Consumer reads " + buffer); // for demo only
+		displayState("El consumer leyo " + buffer); // for demo only
 		notifyAll(); // tell waiting thread(s) to enter runnable state
 		             //Dile a los hilos en espera que ingresen al estado ejecutable
 		return buffer;
@@ -110,6 +111,37 @@ class Consumer implements Runnable{
 		System.out.printf("%n%s %d%n%s%n","El total de valores que consumidor leyo", sum, "Terminando consumidor");
 	}
 } // end class Consumer
+
+class Producer implements Runnable{
+	
+	private static final SecureRandom generator = new SecureRandom();
+	private final Buffer sharedLocation; // reference to shared object
+	                                     //referencia a objeto compartido
+	//constructor
+	public Producer(Buffer sharedLocation){
+	this.sharedLocation = sharedLocation;
+	}
+	
+	// store values from 1 to 10 in sharedLocation
+	//almacena valores de 1 a 10 en sharedLocation
+	public void run() {
+		int sum = 0;
+		for (int count = 1; count <= 10; count++) {
+			try {// sleep 0 to 3 seconds, then place value in Buffer
+				 //duerme de 0 a 3 segundos, luego coloca el valor en Buffer
+				Thread.sleep(generator.nextInt(3000)); // random sleep
+				sharedLocation.blockingPut(count); // set value in buffer/ valor en el buffer
+				sum += count; // increment sum of values/ incrementar la suma de valores
+				//System.out.printf("\t%2d%n", sum);	
+			}
+			catch (InterruptedException exception) {
+				Thread.currentThread().interrupt();
+			}
+		}
+		//System.out.printf("Producer done producing%nTerminating Producer%n");
+		System.out.printf("Produccion terminada del Productor%n Terminando Productor%n");
+	}
+} // end class Producer
 
 
 //PAGINA 990

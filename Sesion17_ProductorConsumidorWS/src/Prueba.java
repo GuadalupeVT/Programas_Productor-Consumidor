@@ -76,7 +76,31 @@ class Consumer implements Runnable{
 	}
 } // end class Consumer
 
+//UnsynchronizedBuffer maintains the shared integer that is accessed by
+// a producer thread and a consumer thread.
 
+//UnsynchronizedBuffer mantiene el número entero compartido al que se accede 
+//mediante un hilo productor y un hilo consumidor.
+
+class UnsynchronizedBuffer implements Buffer{
+	private int buffer = -1; // shared by producer and consumer threads
+	                         //compartido por los hilos productor y consumidor
+	// place value into buffer
+	//Pociciona un valor en el buffer
+	public void blockingPut(int value) throws InterruptedException{
+	//System.out.printf("Producer writes\t%2d", value);
+		System.out.printf("El Productor escribio\t%2d", value);
+	    buffer = value;
+	}
+	
+	// return value from buffer
+	//regresa un valor del buffer
+	public int blockingGet() throws InterruptedException{
+		//System.out.printf("Consumer reads\t%2d", buffer);
+		System.out.printf("El consumidor leyo\t%2d", buffer);
+		return buffer;
+	}
+}// end class UnsynchronizedBuffer
 
 
 

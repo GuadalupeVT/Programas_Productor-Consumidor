@@ -1,4 +1,7 @@
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 interface Buffer{
@@ -42,10 +45,19 @@ class BlockingBuffer implements Buffer{
 
 
 public class Prueba {
-
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		// create new thread pool with two threads
+		//Crear un nuevo grupo de hilos con dos hilos.
+		ExecutorService executorService = Executors.newCachedThreadPool();
+		
+		// create BlockingBuffer to store ints
+		//crear BlockingBuffer para almacenar entradas
+		Buffer sharedLocation = new BlockingBuffer();
+		
+		executorService.execute(new Producer(sharedLocation));
+		executorService.execute(new Consumer(sharedLocation));
+		
+		executorService.shutdown();
+		executorService.awaitTermination(1, TimeUnit.MINUTES);
 	}
-
-}
+} // end class BlockingBufferTest

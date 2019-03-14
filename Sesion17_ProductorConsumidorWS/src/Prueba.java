@@ -41,10 +41,40 @@ class Producer implements Runnable{
 				Thread.currentThread().interrupt();
 			}
 		}
-		System.out.printf("Producer done producing%nTerminating Producer%n");
+		//System.out.printf("Producer done producing%nTerminating Producer%n");
+		System.out.printf("Productor hecho producionedo%n Terminando Productor%n");
 	}
 } // end class Producer
 
+class Consumer implements Runnable{
+	private static final SecureRandom generator = new SecureRandom();
+	private final Buffer sharedLocation; // reference to shared object
+	                                     //referencia a objeto compartido
+	// constructor
+	public Consumer(Buffer sharedLocation){
+	this.sharedLocation = sharedLocation;
+	}
+	
+	// read sharedLocation's value 10 times and sum the values
+	//ea el valor de sharedLocation 10 veces y suma los valores
+	public void run() {
+		int sum = 0;
+		for (int count = 1; count <= 10; count++){
+			// sleep 0 to 3 seconds, read value from buffer and add to sum
+			//duerme de 0 a 3 segundos, lee el valor del búfer y agrega a la suma
+			try{
+				Thread.sleep(generator.nextInt(3000));
+				sum += sharedLocation.blockingGet();
+				System.out.printf("\t\t\t%2d%n", sum);
+			}
+			catch (InterruptedException exception) {
+				Thread.currentThread().interrupt();
+			}
+		}
+		//System.out.printf("%n%s %d%n%s%n","Consumer read values totaling", sum, "Terminating Consumer");
+		System.out.printf("%n%s %d%n%s%n","EL consumidor leeyo los valores totalmente", sum, "Terminando consumidor");
+	}
+} // end class Consumer
 
 
 

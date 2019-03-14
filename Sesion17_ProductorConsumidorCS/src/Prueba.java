@@ -4,6 +4,15 @@
 //Sincronización de acceso a datos mutables compartidos utilizando Object
 //los métodos esperan y notifican a todos.
 
+interface Buffer{
+// place int value into Buffer
+//colocar valor int en Buffer
+	public void blockingPut(int value) throws InterruptedException;
+// return int value from Buffer
+//devuelve el valor int desde Buffer
+	public int blockingGet() throws InterruptedException;
+} // end interface Buffer
+
 class SynchronizedBuffer implements Buffer{
 	private int buffer = -1; // shared by producer and consumer threads
 	private boolean occupied = false;
